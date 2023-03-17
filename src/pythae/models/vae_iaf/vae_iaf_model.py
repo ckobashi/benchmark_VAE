@@ -86,7 +86,8 @@ class VAE_IAF(VAE):
         z = flow_output.out
         log_abs_det_jac = flow_output.log_abs_det_jac
 
-        recon_x = self.decoder(z)["reconstruction"]
+        ## change this for cvae
+        recon_x = self.decoder( torch.hstack( (z,x[7:]) ) )["reconstruction"]
 
         loss, recon_loss, kld = self.loss_function(
             recon_x, x, mu, log_var, z0, z, log_abs_det_jac
@@ -189,8 +190,9 @@ class VAE_IAF(VAE):
                     -0.5 * (log_var + torch.pow(z0 - mu, 2) / torch.exp(log_var))
                 ).sum(dim=1) - log_abs_det_jac
                 log_p_z = -0.5 * (z ** 2).sum(dim=-1)
-
-                recon_x = self.decoder(z)["reconstruction"]
+                
+                ## change this for cvae
+                recon_x = self.decoder(torch.hstack( (z,x[7:]) ) )["reconstruction"]
 
                 if self.model_config.reconstruction_loss == "mse":
 
